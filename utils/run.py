@@ -145,7 +145,7 @@ class Run:
 
                 # Plot next line coefficients graph
                 if self.argument.is_next_line_plot:
-                    vis.plots_coefficient_graph_next_line(sv_log_data1, sv_log_data2)
+                    vis.plots_coefficient_graph_next_line(mobileye_data, sv_log_data1, sv_log_data2)
 
             except Exception as e:
                 logger.warning(e)

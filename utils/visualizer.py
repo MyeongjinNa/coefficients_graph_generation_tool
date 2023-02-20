@@ -19,7 +19,7 @@ class Visualize:
         self.output_path = argument.output_path
         self.argument = argument
 
-    def plots_coefficient_graph_next_line(self, *Datas):
+    def plots_coefficient_graph_next_line(self, me_data, *Datas):
         confi_val_high_quality = 0.77
 
         me_color = 'tomato'
@@ -51,7 +51,14 @@ class Visualize:
                         valid_log_dataset_num = valid_log_dataset_num + 1
                         fig.add_trace(trace=go.Scatter(x=Datas[i].index, y=Datas[i]['SV.Next.{}.{}'.format(side.name, signal.name)],
                                                        line=dict(color=sv_color[i]), name=legend_list[i]+'_'+side.name+signal.name), row=int(signal.value), col=side.value)
-
+        for side in LaneSide:
+            for signal in SignalName:
+                if 'ME.Next.{}.{}'.format(side.name, signal.name) in me_data.columns:
+                    fig.add_trace(trace=go.Scatter(x=me_data.index,
+                                                   y=me_data['ME.Host.{}.{}'.format(side.name, signal.name)],
+                                                   line=dict(color=me_color),
+                                                   name='me'+'_' + side.name + signal.name),
+                                  row=int(signal.value), col=side.value)
 
         length = len(Datas[0].index)
 

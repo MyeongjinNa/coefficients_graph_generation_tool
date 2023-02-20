@@ -236,15 +236,15 @@ class Arranger:
                                'Quality_Lh_ME': 'ME.Host.LH.Quality',
                                'Quality_Rh_ME': 'ME.Host.RH.Quality',
 
-                               'Lh_Neighbor_LaneMark_Model_A_C2': 'ME.Neighbor.LH.C2',
-                               'Lh_Neighbor_LaneMark_Model_B_C1': 'ME.Neighbor.LH.C1',
-                               'Lh_Neighbor_LaneMark_Model_dA_C3': 'ME.Neighbor.LH.C3',
-                               'Lh_Neighbor_LaneMark_Pos_C0': 'ME.Neighbor.LH.C0',
-                               'Rh_Neighbor_LaneMark_Model_A_C2': 'ME.Neighbor.RH.C2',
-                               'Rh_Neighbor_LaneMark_Model_B_C1': 'ME.Neighbor.RH.C1',
-                               'Rh_Neighbor_LaneMark_Model_dA_C3': 'ME.Neighbor.RH.C3',
-                               'Rh_Neighbor_LaneMark_Pos_C0': 'ME.Neighbor.RH.C0',
-                               'Lh_Neightbor_Type': 'ME.Neighbor.LH.Type', 'Rh_Neightbor_Type': 'ME.Neighbor.RH.Type',
+                               'Lh_Neighbor_LaneMark_Model_A_C2': 'ME.Next.LH.C2',
+                               'Lh_Neighbor_LaneMark_Model_B_C1': 'ME.Next.LH.C1',
+                               'Lh_Neighbor_LaneMark_Model_dA_C3': 'ME.Next.LH.C3',
+                               'Lh_Neighbor_LaneMark_Pos_C0': 'ME.Next.LH.C0',
+                               'Rh_Neighbor_LaneMark_Model_A_C2': 'ME.Next.RH.C2',
+                               'Rh_Neighbor_LaneMark_Model_B_C1': 'ME.Next.RH.C1',
+                               'Rh_Neighbor_LaneMark_Model_dA_C3': 'ME.Next.RH.C3',
+                               'Rh_Neighbor_LaneMark_Pos_C0': 'ME.Next.RH.C0',
+                               'Lh_Neightbor_Type': 'ME.Next.LH.Type', 'Rh_Neightbor_Type': 'ME.Next.RH.Type',
                                'Classification_Lh_ME': 'ME.Host.LH.Classification',
                                'Classification_Rh_ME': 'ME.Host.RH.Classification',
                                'Marker_Width_Lh_ME': 'ME.Host.LH.MarkerWidth',
@@ -261,15 +261,15 @@ class Arranger:
         df['ME.Host.RH.C2'] = -df['ME.Host.RH.C2']
         df['ME.Host.RH.C3'] = -df['ME.Host.RH.C3']
 
-        df['ME.Neighbor.LH.C0'] = -df['ME.Neighbor.LH.C0']
-        df['ME.Neighbor.LH.C1'] = -df['ME.Neighbor.LH.C1']
-        df['ME.Neighbor.LH.C2'] = -df['ME.Neighbor.LH.C2']
-        df['ME.Neighbor.LH.C3'] = -df['ME.Neighbor.LH.C3']
+        df['ME.Next.LH.C0'] = -df['ME.Next.LH.C0']
+        df['ME.Next.LH.C1'] = -df['ME.Next.LH.C1']
+        df['ME.Next.LH.C2'] = -df['ME.Next.LH.C2']
+        df['ME.Next.LH.C3'] = -df['ME.Next.LH.C3']
 
-        df['ME.Neighbor.RH.C0'] = -df['ME.Neighbor.RH.C0']
-        df['ME.Neighbor.RH.C1'] = -df['ME.Neighbor.RH.C1']
-        df['ME.Neighbor.RH.C2'] = -df['ME.Neighbor.RH.C2']
-        df['ME.Neighbor.RH.C3'] = -df['ME.Neighbor.RH.C3']
+        df['ME.Next.RH.C0'] = -df['ME.Next.RH.C0']
+        df['ME.Next.RH.C1'] = -df['ME.Next.RH.C1']
+        df['ME.Next.RH.C2'] = -df['ME.Next.RH.C2']
+        df['ME.Next.RH.C3'] = -df['ME.Next.RH.C3']
 
         df.fillna(-1, inplace=True)
 
@@ -296,9 +296,7 @@ class Arranger:
             df.reset_index(drop=True, inplace=True)
             df.drop(['CAM_{}'.format(i) for i in range(1, 21)], axis=1, inplace=True)
 
-        df.rename(columns={'Time': 'DGPS.Timestamp','Speed2D': 'VDY.EgoSpeed',
-                               # (m/s)
-                               }, inplace=True)
+        df.rename(columns={'Time': 'DGPS.Timestamp','Speed2D': 'VDY.EgoSpeed'}, inplace=True)# (m/s)
         df.fillna(-1, inplace=True)
 
         if not os.path.exists(os.path.join(self.output_path, self.dir_name)):

@@ -85,8 +85,8 @@ class Arranger:
             df.loc[:, 'SV.Host.LH.Quality'] = np.where(sv_lh_c0 == -1, -1, 3)
             df.loc[:, 'SV.Host.RH.Quality'] = np.where(sv_rh_c0 == -1, -1, 3)
 
-        if not os.path.exists(os.path.join(self.output_path, self.dir_name)):
-            os.makedirs(os.path.join(self.output_path, self.dir_name))
+        # if not os.path.exists(os.path.join(self.output_path, self.dir_name)):
+        #     os.makedirs(os.path.join(self.output_path, self.dir_name))
 
         # df.to_csv(os.path.join(self.output_path, self.dir_name, self.dir_name + '_log_rearranged.csv'))
         return df
@@ -273,8 +273,8 @@ class Arranger:
 
         df.fillna(-1, inplace=True)
 
-        if not os.path.exists(os.path.join(self.output_path, self.dir_name)):
-            os.makedirs(os.path.join(self.output_path, self.dir_name))
+        # if not os.path.exists(os.path.join(self.output_path, self.dir_name)):
+        #     os.makedirs(os.path.join(self.output_path, self.dir_name))
 
         # df.to_csv(os.path.join(self.output_path, self.dir_name, self.dir_name + '_me_rearranged.csv'))
 
@@ -299,8 +299,8 @@ class Arranger:
         df.rename(columns={'Time': 'DGPS.Timestamp','Speed2D': 'VDY.EgoSpeed'}, inplace=True)# (m/s)
         df.fillna(-1, inplace=True)
 
-        if not os.path.exists(os.path.join(self.output_path, self.dir_name)):
-            os.makedirs(os.path.join(self.output_path, self.dir_name))
+        # if not os.path.exists(os.path.join(self.output_path, self.dir_name)):
+        #     os.makedirs(os.path.join(self.output_path, self.dir_name))
 
         # df.to_csv(os.path.join(self.output_path, self.dir_name, self.dir_name + '_dgps_rearranged.csv'))
 
@@ -329,8 +329,8 @@ class Arranger:
 
         df.fillna(-1, inplace=True)
 
-        if not os.path.exists(os.path.join(self.output_path, self.dir_name)):
-            os.makedirs(os.path.join(self.output_path, self.dir_name))
+        # if not os.path.exists(os.path.join(self.output_path, self.dir_name)):
+        #     os.makedirs(os.path.join(self.output_path, self.dir_name))
 
         # df.to_csv(os.path.join(self.output_path, self.dir_name, self.dir_name + '_can_rearranged.csv'))
 

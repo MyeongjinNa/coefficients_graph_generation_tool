@@ -55,7 +55,7 @@ class Visualize:
             for signal in SignalName:
                 if 'ME.Next.{}.{}'.format(side.name, signal.name) in me_data.columns:
                     fig.add_trace(trace=go.Scatter(x=me_data.index,
-                                                   y=me_data['ME.Host.{}.{}'.format(side.name, signal.name)],
+                                                   y=me_data['ME.Next.{}.{}'.format(side.name, signal.name)],
                                                    line=dict(color=me_color),
                                                    name='me'+'_' + side.name + signal.name),
                                   row=int(signal.value), col=side.value)
@@ -86,10 +86,28 @@ class Visualize:
                       row=4, col=2)
         fig.add_trace(trace=go.Scatter(x=Datas[0].index, y=np.full(length,confi_val_high_quality), line=dict(color=guide_color), showlegend=False),
                       row=6, col=2)
+        self.calculate_statistics('Next', me_data, Datas[0], Datas[1])
 
+        header = ['/', 'MEyeQ4']
+        sv_header = legend_list #list('SV_{}'.format(i) for i in range(valid_log_dataset_num))
+        header.extend(sv_header)
+
+        fig.add_trace(
+            go.Table(
+                header=dict(
+                    values=header,
+                    font=dict(size=12),
+                    align="left"
+                ),
+                cells=dict(
+                    values=self.kpi_data.T,
+                    align="left")
+            ),
+            row=1, col=3
+        )
 
         if 'highway' in self.scenario:
-            fig.update_layout(yaxis=dict(range=[1, 2]),
+            fig.update_layout(
                               yaxis2=dict(range=[-2.5, -1.2]),
                               yaxis3=dict(range=[-0.015, 0.015]),
                               yaxis4=dict(range=[-0.015, 0.015]),
@@ -99,7 +117,7 @@ class Visualize:
                               yaxis8=dict(range=[-0.0000025, 0.0000025]),
                               font=dict(size=9))
         elif 'curve' in self.scenario:
-            fig.update_layout(yaxis=dict(range=[1.5, 3]),
+            fig.update_layout(
                               yaxis2=dict(range=[-2, 0]),
                               yaxis3=dict(range=[-0.05, 0.05]),
                               yaxis4=dict(range=[-0.05, 0.05]),
@@ -109,7 +127,7 @@ class Visualize:
                               yaxis8=dict(range=[-0.000025, 0.000025]),
                               font=dict(size=9))
         else:
-            fig.update_layout(yaxis=dict(range=[1, 2]),
+            fig.update_layout(
                               yaxis2=dict(range=[-2.5, -1]),
                               yaxis3=dict(range=[-0.025, 0.025]),
                               yaxis4=dict(range=[-0.025, 0.025]),
@@ -232,7 +250,7 @@ class Visualize:
         fig.add_trace(trace=go.Scatter(x=Datas[0].index, y=np.full(length,confi_val_high_quality), line=dict(color=guide_color), showlegend=False),
                       row=6, col=2)
 
-
+        self.calculate_statistics('Host', me_data, Datas[0], Datas[1], Datas[2], Datas[3])
 
         header = ['/', 'MEyeQ4']
         sv_header = legend_list #list('SV_{}'.format(i) for i in range(valid_log_dataset_num))
@@ -252,7 +270,7 @@ class Visualize:
             row=1, col=3
         )
         if 'highway' in self.scenario:
-            fig.update_layout(yaxis=dict(range=[1, 2]),
+            fig.update_layout(
                               yaxis2=dict(range=[-2.5, -1.2]),
                               yaxis3=dict(range=[-0.015, 0.015]),
                               yaxis4=dict(range=[-0.015, 0.015]),
@@ -262,7 +280,7 @@ class Visualize:
                               yaxis8=dict(range=[-0.0000025, 0.0000025]),
                               font=dict(size=9))
         elif 'curve' in self.scenario:
-            fig.update_layout(yaxis=dict(range=[1.5, 3]),
+            fig.update_layout(
                               yaxis2=dict(range=[-2, 0]),
                               yaxis3=dict(range=[-0.05, 0.05]),
                               yaxis4=dict(range=[-0.05, 0.05]),
@@ -272,7 +290,7 @@ class Visualize:
                               yaxis8=dict(range=[-0.000025, 0.000025]),
                               font=dict(size=9))
         else:
-            fig.update_layout(yaxis=dict(range=[1, 2]),
+            fig.update_layout(
                               yaxis2=dict(range=[-2.5, -1]),
                               yaxis3=dict(range=[-0.025, 0.025]),
                               yaxis4=dict(range=[-0.025, 0.025]),
@@ -307,7 +325,7 @@ class Visualize:
             fig.write_html(os.path.join(self.output_path, self.recording_name + '_' + str(self.scenario))
                            + '_' + legend_list[0] + '_' + legend_list[1] + '_graph.html')
 
-    def calculate_statistics(self, me_data, *Datas):
+    def calculate_statistics(self, lane_pos, me_data, *Datas):
         index = [' avail rate(%)',
               ' c0 median', ' c1 median', ' c2 median', ' c3 median',
               ' c0 std', ' c1 std', ' c2 std', ' c3 std',
@@ -316,36 +334,35 @@ class Visualize:
 
         mobileye_statistics_data = np.full((len(index)), 0)
         round_num = 8
-        valid_confidence = 0.77
+
         sv_statistics_data = []
-        total_frames = len(Datas[0])
+
         for i in range(len(Datas)):
-            if ('SV.Host.LH.Confidence' in Datas[i].columns):
-                valid_left_outputs = Datas[i].loc[Datas[i]['SV.Host.LH.Confidence'] > valid_confidence]
-                valid_right_outputs = Datas[i].loc[Datas[i]['SV.Host.RH.Confidence'] > valid_confidence]
+            if ('SV.{}.LH.Confidence'.format(lane_pos) in Datas[i].columns):
 
-                sv_availability_lh = np.array([len(valid_left_outputs) / total_frames * 100])
-                sv_availability_rh = np.array([len(valid_right_outputs) / total_frames * 100])
+                df_l = Datas[i].loc[:,
+                       ['SV.{}.LH.C0'.format(lane_pos), 'SV.{}.LH.C1'.format(lane_pos), 'SV.{}.LH.C2'.format(lane_pos), 'SV.{}.LH.C3'.format(lane_pos)]].copy()
 
-                sv_lh_median = Datas[i].loc[:, ['SV.Host.LH.C0', 'SV.Host.LH.C1', 'SV.Host.LH.C2', 'SV.Host.LH.C3']].loc[
-                    Datas[i]['SV.Host.LH.Quality'] == 3].median(skipna=True).round(round_num).to_numpy()
-                sv_rh_median = Datas[i].loc[:, ['SV.Host.RH.C0', 'SV.Host.RH.C1', 'SV.Host.RH.C2', 'SV.Host.RH.C3']].loc[
-                    Datas[i]['SV.Host.RH.Quality'] == 3].median(skipna=True).round(round_num).to_numpy()
+                df_r = Datas[i].loc[:,
+                       ['SV.{}.RH.C0'.format(lane_pos), 'SV.{}.RH.C1'.format(lane_pos), 'SV.{}.RH.C2'.format(lane_pos),'SV.{}.RH.C3'.format(lane_pos)]].copy()
 
-                sv_lh_std = Datas[i].loc[:, ['SV.Host.LH.C0', 'SV.Host.LH.C1', 'SV.Host.LH.C2', 'SV.Host.LH.C3']].loc[
-                    Datas[i]['SV.Host.LH.Quality'] == 3].std(skipna=True).round(round_num).to_numpy()
-                sv_rh_std = Datas[i].loc[:, ['SV.Host.RH.C0', 'SV.Host.RH.C1', 'SV.Host.RH.C2', 'SV.Host.RH.C3']].loc[
-                    Datas[i]['SV.Host.RH.Quality'] == 3].std(skipna=True).round(round_num).to_numpy()
+                condition_l = Datas[i]['SV.{}.LH.Quality'.format(lane_pos)] == 3
+                condition_r = Datas[i]['SV.{}.RH.Quality'.format(lane_pos)] == 3
 
-                sv_lh_min = Datas[i].loc[:, ['SV.Host.LH.C0', 'SV.Host.LH.C1', 'SV.Host.LH.C2', 'SV.Host.LH.C3']].loc[
-                    Datas[i]['SV.Host.LH.Quality'] == 3].max(axis=0).round(round_num).to_numpy()
-                sv_rh_min = Datas[i].loc[:, ['SV.Host.RH.C0', 'SV.Host.RH.C1', 'SV.Host.RH.C2', 'SV.Host.RH.C3']].loc[
-                    Datas[i]['SV.Host.RH.Quality'] == 3].max(axis=0).round(round_num).to_numpy()
+                sv_availability_lh = np.array([len(Datas[i].loc[condition_l]) / len(Datas[i]) * 100])
+                sv_availability_rh = np.array([len(Datas[i].loc[condition_r]) / len(Datas[i]) * 100])
 
-                sv_lh_max = Datas[i].loc[:, ['SV.Host.LH.C0', 'SV.Host.LH.C1', 'SV.Host.LH.C2', 'SV.Host.LH.C3']].loc[
-                    Datas[i]['SV.Host.LH.Quality'] == 3].min(axis=0).round(round_num).to_numpy()
-                sv_rh_max = Datas[i].loc[:, ['SV.Host.RH.C0', 'SV.Host.RH.C1', 'SV.Host.RH.C2', 'SV.Host.RH.C3']].loc[
-                    Datas[i]['SV.Host.RH.Quality'] == 3].min(axis=0).round(round_num).to_numpy()
+                sv_lh_median = df_l.loc[condition_l].median(skipna=True).round(round_num).to_numpy()
+                sv_rh_median = df_r.loc[condition_r].median(skipna=True).round(round_num).to_numpy()
+
+                sv_lh_std = df_l.loc[condition_l].std(skipna=True).round(round_num).to_numpy()
+                sv_rh_std = df_r.loc[condition_r].std(skipna=True).round(round_num).to_numpy()
+
+                sv_lh_min = df_l.loc[condition_l].max(axis=0).round(round_num).to_numpy()
+                sv_rh_min = df_r.loc[condition_r].max(axis=0).round(round_num).to_numpy()
+
+                sv_lh_max = df_l.loc[condition_l].min(axis=0).round(round_num).to_numpy()
+                sv_rh_max = df_r.loc[condition_r].min(axis=0).round(round_num).to_numpy()
 
                 sv_availability = (sv_availability_lh+sv_availability_rh)/2
                 sv_median = (sv_lh_median+sv_rh_median)/2
@@ -359,27 +376,29 @@ class Visualize:
         if ('ME.Host.LH.C0' in me_data.columns):
             condition_l = (me_data['ME.Host.LH.Quality'] >= 2)
             condition_r = (me_data['ME.Host.RH.Quality'] >= 2)
-            valid_left_outputs = len(me_data.loc[condition_l])
-            valid_right_outputs = len(me_data.loc[condition_r])
 
-            me_availability_lh = np.array([valid_left_outputs / total_frames * 100])
-            me_availability_rh = np.array([ valid_right_outputs / total_frames * 100])
-            me_lh_median = me_data.loc[:, ['ME.Host.LH.C0', 'ME.Host.LH.C1', 'ME.Host.LH.C2', 'ME.Host.LH.C3']].loc[
-                condition_l].median(skipna=True).round(round_num).to_numpy()
-            me_rh_median = me_data.loc[:, ['ME.Host.RH.C0', 'ME.Host.RH.C1', 'ME.Host.RH.C2', 'ME.Host.RH.C3']].loc[
-                condition_r].median(skipna=True).round(round_num).to_numpy()
-            me_lh_std = me_data.loc[:, ['ME.Host.LH.C0', 'ME.Host.LH.C1', 'ME.Host.LH.C2', 'ME.Host.LH.C3']].loc[
-                condition_l].std(skipna=True).round(round_num).to_numpy()
-            me_rh_std = me_data.loc[:, ['ME.Host.RH.C0', 'ME.Host.RH.C1', 'ME.Host.RH.C2', 'ME.Host.RH.C3']].loc[
-                condition_r].std(skipna=True).round(round_num).to_numpy()
-            me_lh_min = me_data.loc[:, ['ME.Host.LH.C0', 'ME.Host.LH.C1', 'ME.Host.LH.C2', 'ME.Host.LH.C3']].loc[
-                condition_l].max(axis=0).round(round_num).to_numpy()
-            me_rh_min = me_data.loc[:, ['ME.Host.RH.C0', 'ME.Host.RH.C1', 'ME.Host.RH.C2', 'ME.Host.RH.C3']].loc[
-                condition_r].max(axis=0).round(round_num).to_numpy()
-            me_lh_max = me_data.loc[:, ['ME.Host.LH.C0', 'ME.Host.LH.C1', 'ME.Host.LH.C2', 'ME.Host.LH.C3']].loc[
-                condition_l].min(axis=0).round(round_num).to_numpy()
-            me_rh_max = me_data.loc[:, ['ME.Host.RH.C0', 'ME.Host.RH.C1', 'ME.Host.RH.C2', 'ME.Host.RH.C3']].loc[
-                condition_r].min(axis=0).round(round_num).to_numpy()
+            me_availability_lh = np.array([len(me_data.loc[condition_l]) / len(me_data) * 100])
+            me_availability_rh = np.array([len(me_data.loc[condition_r]) / len(me_data) * 100])
+
+            df_l = me_data.loc[:,
+                   ['ME.{}.LH.C0'.format(lane_pos), 'ME.{}.LH.C1'.format(lane_pos), 'ME.{}.LH.C2'.format(lane_pos),
+                    'ME.{}.LH.C3'.format(lane_pos)]].copy()
+
+            df_r = me_data.loc[:,
+                   ['ME.{}.RH.C0'.format(lane_pos), 'ME.{}.RH.C1'.format(lane_pos), 'ME.{}.RH.C2'.format(lane_pos),
+                    'ME.{}.RH.C3'.format(lane_pos)]].copy()
+
+
+
+            me_lh_median = df_l.loc[condition_l].median(skipna=True).round(round_num).to_numpy()
+            me_rh_median = df_r.loc[condition_r].median(skipna=True).round(round_num).to_numpy()
+
+            me_lh_std = df_l.loc[condition_l].std(skipna=True).round(round_num).to_numpy()
+            me_rh_std = df_r.loc[condition_r].std(skipna=True).round(round_num).to_numpy()
+            me_lh_min = df_l.loc[condition_l].max(axis=0).round(round_num).to_numpy()
+            me_rh_min = df_r.loc[condition_r].max(axis=0).round(round_num).to_numpy()
+            me_lh_max = df_l.loc[condition_l].min(axis=0).round(round_num).to_numpy()
+            me_rh_max = df_r.loc[condition_r].min(axis=0).round(round_num).to_numpy()
             me_availability = (me_availability_lh + me_availability_rh) / 2
             me_median = (me_lh_median + me_rh_median) / 2
             me_std = (me_lh_std + me_rh_std) / 2

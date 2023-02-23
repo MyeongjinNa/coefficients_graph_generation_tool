@@ -111,44 +111,44 @@ class Run:
 
             logger.debug('{}:{} is running'.format(i, current_playlist.recording_name))
 
-            try:
-                # Get data from sv log files
-                sv_log_data1 = self.load_raw_data(self.log_sv_dir_path_1, current_playlist, suffix_plus_ext='lda_tiny_log.csv')
-                sv_log_data2 = self.load_raw_data(self.log_sv_dir_path_2, current_playlist, suffix_plus_ext='lda_tiny_log.csv')
-                sv_log_data3 = self.load_raw_data(self.log_sv_dir_path_3, current_playlist, suffix_plus_ext='lda_tiny_log.csv')
-                sv_log_data4 = self.load_raw_data(self.log_sv_dir_path_4, current_playlist, suffix_plus_ext='lda_tiny_log.csv')
+            # try:
+            # Get data from sv log files
+            sv_log_data1 = self.load_raw_data(self.log_sv_dir_path_1, current_playlist, suffix_plus_ext='lda_tiny_log.csv')
+            sv_log_data2 = self.load_raw_data(self.log_sv_dir_path_2, current_playlist, suffix_plus_ext='lda_tiny_log.csv')
+            sv_log_data3 = self.load_raw_data(self.log_sv_dir_path_3, current_playlist, suffix_plus_ext='lda_tiny_log.csv')
+            sv_log_data4 = self.load_raw_data(self.log_sv_dir_path_4, current_playlist, suffix_plus_ext='lda_tiny_log.csv')
 
-                # Options is about which feature is plotted.
-                # The subject of file name is depends on database type
-                if self.argument.is_adaf_db:
-                    mobileye_data = self.load_raw_data(self.measurement_path, current_playlist, suffix_plus_ext='me.csv')
-                else:
-                    mobileye_data = self.load_raw_data(self.measurement_path, current_playlist, suffix_plus_ext='pcan.csv')
+            # Options is about which feature is plotted.
+            # The subject of file name is depends on database type
+            if self.argument.is_adaf_db:
+                mobileye_data = self.load_raw_data(self.measurement_path, current_playlist, suffix_plus_ext='me.csv')
+            else:
+                mobileye_data = self.load_raw_data(self.measurement_path, current_playlist, suffix_plus_ext='pcan.csv')
 
-                # Plot ground truth coefficients graph
-                if self.argument.is_gt_plot:
-                    # it is not implemented yet
-                    gt_data = self.load_gt_data(current_playlist)
-                else:
-                    gt_data = self.initial_data()
+            # Plot ground truth coefficients graph
+            if self.argument.is_gt_plot:
+                # it is not implemented yet
+                gt_data = self.load_gt_data(current_playlist)
+            else:
+                gt_data = self.initial_data()
 
-                # Plot CPP coefficients graph
-                if self.argument.is_cpp_plot:
-                    cpp_data = self.load_raw_data(self.log_sv_dir_path_1, current_playlist, suffix_plus_ext='adaf_log.csv')
-                else:
-                    cpp_data = self.initial_data()
+            # Plot CPP coefficients graph
+            if self.argument.is_cpp_plot:
+                cpp_data = self.load_raw_data(self.log_sv_dir_path_1, current_playlist, suffix_plus_ext='adaf_log.csv')
+            else:
+                cpp_data = self.initial_data()
 
-                vis = Visualize(current_playlist, self.argument)
-                vis.calculate_statistics(mobileye_data, sv_log_data1, sv_log_data2, sv_log_data3, sv_log_data4)
-                vis.plots_coefficient_graph(mobileye_data, gt_data, cpp_data,
-                                            sv_log_data1, sv_log_data2, sv_log_data3, sv_log_data4)
+            vis = Visualize(current_playlist, self.argument)
+            #vis.calculate_statistics(mobileye_data, sv_log_data1, sv_log_data2, sv_log_data3, sv_log_data4)
+            vis.plots_coefficient_graph(mobileye_data, gt_data, cpp_data,
+                                        sv_log_data1, sv_log_data2, sv_log_data3, sv_log_data4)
 
-                # Plot next line coefficients graph
-                if self.argument.is_next_line_plot:
-                    vis.plots_coefficient_graph_next_line(mobileye_data, sv_log_data1, sv_log_data2)
+            # Plot next line coefficients graph
+            if self.argument.is_next_line_plot:
+                vis.plots_coefficient_graph_next_line(mobileye_data, sv_log_data1, sv_log_data2, sv_log_data3, sv_log_data4)
 
-            except Exception as e:
-                logger.warning(e)
+            # except Exception as e:
+            #     logger.warning(e)
 
     def run(self):
         self.generate_coefficient_graph()

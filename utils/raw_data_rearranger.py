@@ -85,18 +85,19 @@ class Arranger:
             df.loc[:, 'SV.Host.LH.Quality'] = np.where(sv_lh_c0 == -1, -1, 3)
             df.loc[:, 'SV.Host.RH.Quality'] = np.where(sv_rh_c0 == -1, -1, 3)
 
-        if 'SV.Next.LH.Confidence' in df.columns:
-            sv_lh_confidence = df.loc[:, 'SV.Next.LH.Confidence'].to_numpy()
-            sv_rh_confidence = df.loc[:, 'SV.Next.RH.Confidence'].to_numpy()
-            df.loc[:, 'SV.Next.LH.Quality'] = np.where(sv_lh_confidence > 0.77, 3, 0)
-            df.loc[:, 'SV.Next.RH.Quality'] = np.where(sv_rh_confidence > 0.77, 3, 0)
-        else:
-            sv_lh_c0 = df.loc[:, 'SV.Next.LH.C0'].to_numpy()
-            sv_rh_c0 = df.loc[:, 'SV.Next.RH.C0'].to_numpy()
-            df.loc[:, 'SV.Next.LH.Confidence'] = np.where(sv_lh_c0 == -1, -1, 1)
-            df.loc[:, 'SV.Next.RH.Confidence'] = np.where(sv_rh_c0 == -1, -1, 1)
-            df.loc[:, 'SV.Next.LH.Quality'] = np.where(sv_lh_c0 == -1, -1, 3)
-            df.loc[:, 'SV.Next.RH.Quality'] = np.where(sv_rh_c0 == -1, -1, 3)
+        if self.is_next_line_plot:
+            if 'SV.Next.LH.Confidence' in df.columns:
+                sv_lh_confidence = df.loc[:, 'SV.Next.LH.Confidence'].to_numpy()
+                sv_rh_confidence = df.loc[:, 'SV.Next.RH.Confidence'].to_numpy()
+                df.loc[:, 'SV.Next.LH.Quality'] = np.where(sv_lh_confidence > 0.77, 3, 0)
+                df.loc[:, 'SV.Next.RH.Quality'] = np.where(sv_rh_confidence > 0.77, 3, 0)
+            else:
+                sv_lh_c0 = df.loc[:, 'SV.Next.LH.C0'].to_numpy()
+                sv_rh_c0 = df.loc[:, 'SV.Next.RH.C0'].to_numpy()
+                df.loc[:, 'SV.Next.LH.Confidence'] = np.where(sv_lh_c0 == -1, -1, 1)
+                df.loc[:, 'SV.Next.RH.Confidence'] = np.where(sv_rh_c0 == -1, -1, 1)
+                df.loc[:, 'SV.Next.LH.Quality'] = np.where(sv_lh_c0 == -1, -1, 3)
+                df.loc[:, 'SV.Next.RH.Quality'] = np.where(sv_rh_c0 == -1, -1, 3)
 
         # if not os.path.exists(os.path.join(self.output_path, self.dir_name)):
         #     os.makedirs(os.path.join(self.output_path, self.dir_name))

@@ -158,7 +158,7 @@ class Visualize:
         fig['layout']['title'] = self.recording_name + ' ' + str(self.scenario)
 
         if 'SV.Next.LH.C0' in Datas[0].columns:
-            fig.show()
+            # fig.show()
             fig.write_html(os.path.join(self.output_path, self.recording_name + '_' + str(self.scenario))
                            + '_' + legend_list[0] + '_' + legend_list[1] + '_next_line_graph.html')
 
@@ -320,7 +320,7 @@ class Visualize:
         fig['layout']['yaxis12']['title'] = 'Confidence(Quality)'
         fig['layout']['title'] = self.recording_name + ' ' + str(self.scenario)
 
-        fig.show()
+        # fig.show()
         if 'SV.Host.LH.C0' in Datas[0].columns:
             fig.write_html(os.path.join(self.output_path, self.recording_name + '_' + str(self.scenario))
                            + '_' + legend_list[0] + '_' + legend_list[1] + '_graph.html')

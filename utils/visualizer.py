@@ -330,7 +330,7 @@ class Visualize:
               ' c0 median', ' c1 median', ' c2 median', ' c3 median',
               ' c0 std', ' c1 std', ' c2 std', ' c3 std',
               ' c0 min', ' c1 min', ' c2 min', ' c3 min',
-              ' c0 max', ' c1 max', ' c2 max', ' c3 max', ]
+              ' c0 max', ' c1 max', ' c2 max', ' c3 max', 'Avg view range']
 
         mobileye_statistics_data = np.full((len(index)), 0)
         round_num = 8
@@ -352,26 +352,32 @@ class Visualize:
                 sv_availability_lh = np.array([len(Datas[i].loc[condition_l]) / len(Datas[i]) * 100])
                 sv_availability_rh = np.array([len(Datas[i].loc[condition_r]) / len(Datas[i]) * 100])
 
-                sv_lh_median = df_l.loc[condition_l].median(skipna=True).round(round_num).to_numpy()
-                sv_rh_median = df_r.loc[condition_r].median(skipna=True).round(round_num).to_numpy()
+                sv_lh_median = df_l.loc[condition_l].median(skipna=True).to_numpy()
+                sv_rh_median = df_r.loc[condition_r].median(skipna=True).to_numpy()
 
-                sv_lh_std = df_l.loc[condition_l].std(skipna=True).round(round_num).to_numpy()
-                sv_rh_std = df_r.loc[condition_r].std(skipna=True).round(round_num).to_numpy()
+                sv_lh_std = df_l.loc[condition_l].std(skipna=True).to_numpy()
+                sv_rh_std = df_r.loc[condition_r].std(skipna=True).to_numpy()
 
-                sv_lh_min = df_l.loc[condition_l].max(axis=0).round(round_num).to_numpy()
-                sv_rh_min = df_r.loc[condition_r].max(axis=0).round(round_num).to_numpy()
+                sv_lh_min = df_l.loc[condition_l].max(axis=0).to_numpy()
+                sv_rh_min = df_r.loc[condition_r].max(axis=0).to_numpy()
 
-                sv_lh_max = df_l.loc[condition_l].min(axis=0).round(round_num).to_numpy()
-                sv_rh_max = df_r.loc[condition_r].min(axis=0).round(round_num).to_numpy()
+                sv_lh_max = df_l.loc[condition_l].min(axis=0).to_numpy()
+                sv_rh_max = df_r.loc[condition_r].min(axis=0).to_numpy()
+
+                sv_lh_view_range_mean = Datas[i].loc[:, ['SV.Host.LH.ViewRangeEnd']].loc[
+                    Datas[i]['SV.Host.LH.Quality'] == 3].mean(axis=0).to_numpy()
+                sv_rh_view_range_mean = Datas[i].loc[:, ['SV.Host.RH.ViewRangeEnd']].loc[
+                    Datas[i]['SV.Host.RH.Quality'] == 3].mean(axis=0).to_numpy()
 
                 sv_availability = (sv_availability_lh+sv_availability_rh)/2
                 sv_median = (sv_lh_median+sv_rh_median)/2
                 sv_std = (sv_lh_std+sv_rh_std)/2
                 sv_min = (sv_lh_min+sv_rh_min)/2
                 sv_max = (sv_lh_max+sv_rh_max)/2
+                sv_view_range_mean = (sv_lh_view_range_mean+sv_rh_view_range_mean)/2
 
                 sv_statistics_data.append(np.concatenate(
-                    (sv_availability, sv_median, sv_std, sv_min, sv_max)))
+                    (np.round(sv_availability,2), np.round(sv_median,8), np.round(sv_std,8), np.round(sv_min,8), np.round(sv_max,8), np.round(sv_view_range_mean,2))))
 
         if ('ME.Host.LH.C0' in me_data.columns):
             condition_l = (me_data['ME.Host.LH.Quality'] >= 2)
@@ -388,24 +394,30 @@ class Visualize:
                    ['ME.{}.RH.C0'.format(lane_pos), 'ME.{}.RH.C1'.format(lane_pos), 'ME.{}.RH.C2'.format(lane_pos),
                     'ME.{}.RH.C3'.format(lane_pos)]].copy()
 
+            me_lh_median = df_l.loc[condition_l].median(skipna=True).to_numpy()
+            me_rh_median = df_r.loc[condition_r].median(skipna=True).to_numpy()
 
+            me_lh_std = df_l.loc[condition_l].std(skipna=True).to_numpy()
+            me_rh_std = df_r.loc[condition_r].std(skipna=True).to_numpy()
+            me_lh_min = df_l.loc[condition_l].max(axis=0).to_numpy()
+            me_rh_min = df_r.loc[condition_r].max(axis=0).to_numpy()
+            me_lh_max = df_l.loc[condition_l].min(axis=0).to_numpy()
+            me_rh_max = df_r.loc[condition_r].min(axis=0).to_numpy()
 
-            me_lh_median = df_l.loc[condition_l].median(skipna=True).round(round_num).to_numpy()
-            me_rh_median = df_r.loc[condition_r].median(skipna=True).round(round_num).to_numpy()
+            me_lh_view_range_mean = me_data.loc[:, ['ME.Host.LH.ViewRangeEnd']].loc[
+                me_data['ME.Host.LH.Quality'] >= 2].mean(axis=0).to_numpy()
+            me_rh_view_range_mean = me_data.loc[:, ['ME.Host.RH.ViewRangeEnd']].loc[
+                me_data['ME.Host.RH.Quality'] >= 2].mean(axis=0).to_numpy()
 
-            me_lh_std = df_l.loc[condition_l].std(skipna=True).round(round_num).to_numpy()
-            me_rh_std = df_r.loc[condition_r].std(skipna=True).round(round_num).to_numpy()
-            me_lh_min = df_l.loc[condition_l].max(axis=0).round(round_num).to_numpy()
-            me_rh_min = df_r.loc[condition_r].max(axis=0).round(round_num).to_numpy()
-            me_lh_max = df_l.loc[condition_l].min(axis=0).round(round_num).to_numpy()
-            me_rh_max = df_r.loc[condition_r].min(axis=0).round(round_num).to_numpy()
             me_availability = (me_availability_lh + me_availability_rh) / 2
             me_median = (me_lh_median + me_rh_median) / 2
             me_std = (me_lh_std + me_rh_std) / 2
             me_min = (me_lh_min + me_rh_min) / 2
             me_max = (me_lh_max + me_rh_max) / 2
+            me_view_range_mean = (me_lh_view_range_mean + me_rh_view_range_mean) / 2
+
             mobileye_statistics_data = np.concatenate(
-                (me_availability, me_median, me_std, me_min, me_max))
+                (np.round(me_availability,2), np.round(me_median,8), np.round(me_std,8), np.round(me_min,8), np.round(me_max,8), np.round(me_view_range_mean, 2)))
 
         kpi_dict = {'index': index, 'ME': mobileye_statistics_data}
         for i in range(len(sv_statistics_data)):

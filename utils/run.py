@@ -49,7 +49,7 @@ class Run:
         except:
             # if it cannot find the relevant csv file, it set empty dataFrame
             df = self.initial_data()
-            logger.warning('Fail..{}'.format(current_playlist.recording_name))
+            logger.debug('Cannot find..{}'.format(os.path.join(dir_path + dir_name) + '_' + suffix_plus_ext))
 
         return df
 
@@ -61,7 +61,7 @@ class Run:
         # get directory name from playlist csv file
         dir_name = current_playlist.recording_name
         file_list = glob.glob(
-            os.path.join(dir_path, '**', '*' + dir_name + '*',  '*' + dir_name + '*' + suffix_plus_ext))
+            os.path.join(dir_path, '*' + dir_name + '*',  '*' + dir_name + '*' + suffix_plus_ext))
         try:
             logger.debug('Rearranging..{}'.format(file_list[0]))
             # Rearrange the coefficients by frameIO
@@ -79,7 +79,7 @@ class Run:
         except:
             # if it cannot find the relevant csv file, it set empty dataFrame
             df = self.initial_data()
-            logger.warning('Fail..{}'.format(current_playlist.recording_name))
+            logger.debug('Cannot find..{}'.format(os.path.join(dir_path + dir_name) + '_' + suffix_plus_ext))
 
         return df
 
@@ -117,7 +117,7 @@ class Run:
         if os.path.isfile(self.playlist_file_path):
             df = pd.read_csv(self.playlist_file_path)
 
-            df['scenario'] = df['scenario1'] + '_' + df['scenario2']
+            df['scenario'] = df['scenario'] # + '_' + df['scenario2']
 
         else:
             logger.warning('playlist file is missing')
@@ -169,7 +169,7 @@ class Run:
                 cpp_data = self.initial_data()
 
             vis = Visualize(current_playlist, self.argument)
-            #vis.calculate_statistics(mobileye_data, sv_log_data1, sv_log_data2, sv_log_data3, sv_log_data4)
+            # vis.calculate_statistics(mobileye_data, sv_log_data1, sv_log_data2, sv_log_data3, sv_log_data4)
             vis.plots_coefficient_graph(mobileye_data, gt_data, cpp_data,
                                         sv_log_data1, sv_log_data2, sv_log_data3, sv_log_data4)
 

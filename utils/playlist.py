@@ -12,7 +12,7 @@ class Playlist:
 
     def get_playlist_info(self, my_playlist_data, i):
         self.recording_name = str(my_playlist_data.loc[i, 'recording_name']).strip('_log')
-        self.scenario = str(my_playlist_data.loc[i, 'scenario1'])+'_'+str(my_playlist_data.loc[i, 'scenario2'])
+        self.scenario =str(my_playlist_data.loc[i, 'scenario']) #str(my_playlist_data.loc[i, 'scenario1'])+'_'+str(my_playlist_data.loc[i, 'scenario2'])
         self.start_timestamp = int(my_playlist_data.loc[i, 'timestamp.start'])
         self.end_timestamp = int(my_playlist_data.loc[i, 'timestamp.end'])
         self.index = i
